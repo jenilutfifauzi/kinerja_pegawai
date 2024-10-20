@@ -6,7 +6,7 @@
 
     </x-filament::breadcrumbs>
     <div class="flex justify-between mt-1">
-        <h2 class="text-3xl font-bold">Data Penilaian  </h2>
+        <h2 class="text-3xl font-bold">Data Penilaian </h2>
     </div>
     <div class="mt-4">
         <form wire:submit="save" class="w-full max-w-sm flex mt-2">
