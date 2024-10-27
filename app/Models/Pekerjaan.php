@@ -27,4 +27,9 @@ class Pekerjaan extends Model
     {
         return $this->belongsTo(KategoriPekerjaan::class);
     }
+
+    public function data_penilaians()
+    {
+        return $this->hasMany(DataPenilaian::class);
+    }
 }

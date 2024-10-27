@@ -4,7 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\DataPenilaianResource\Pages;
 use App\Filament\Resources\DataPenilaianResource\RelationManagers;
-use App\Filament\Resources\KelolaPekerjaanResource\RelationManagers\KelolaPekerjaanRelationManager;
+use App\Filament\Resources\DataPenilaianResource\RelationManagers\KelolaPekerjaansRelationManager;
+use App\Filament\Widgets\KelolaPekerjaanWidget;
 use App\Models\DataPenilaian;
 use App\Models\Pegawai;
 use Faker\Provider\ar_EG\Text;
@@ -16,6 +17,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -46,6 +48,26 @@ class DataPenilaianResource extends Resource
                     ->required(),
                 TextInput::make('jumlah_sakit')
                     ->label('Jumlah Sakit')
+                    ->required(),
+                Select::make('nilai_bobot_pekerjaan_harian')
+                    ->label('Nilai Bobot Pekerjaan Harian')
+                    ->options([
+                        '5' => 'Baik Sekali',
+                        '4' => 'Baik',
+                        '3' => 'Cukup',
+                        '2' => 'Agak Kurang',
+                        '1' => 'Kurang',
+                    ])
+                    ->required(),
+                    Select::make('nilai_bobot_pekerjaan_lembur')
+                    ->label('Nilai Bobot Pekerjaan Lembur')
+                    ->options([
+                        '5' => 'Baik Sekali',
+                        '4' => 'Baik',
+                        '3' => 'Cukup',
+                        '2' => 'Agak Kurang',
+                        '1' => 'Kurang',
+                    ])
                     ->required(),
                 DatePicker::make('periode')
                     ->label('Periode')
@@ -98,10 +120,39 @@ class DataPenilaianResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                Filter::make('periode')
+                ->form([
+                    Forms\Components\DatePicker::make('created_from')
+                        ->label('Periode dari'),
+                    Forms\Components\DatePicker::make('created_until')
+                        ->label('Periode sampai'),
+                ])
+                ->query(function (Builder $query, array $data): Builder {
+                    return $query
+                        ->when(
+                            $data['created_from'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('periode', '>=', $date),
+                        )
+                        ->when(
+                            $data['created_until'],
+                            fn (Builder $query, $date): Builder => $query->whereDate('periode', '<=', $date),
+                        );
+                })
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                ->using(function (DataPenilaian $record, array $data): DataPenilaian {
+
+                    $nilai_total_pekerjaan_harian = $data['nilai_bobot_pekerjaan_harian'] * 10;
+                    $nilai_total_pekerjaan_lembur = $data['nilai_bobot_pekerjaan_lembur'] * 10;
+                    $data['nilai_total_pekerjaan_harian'] = $nilai_total_pekerjaan_harian;
+                    $data['nilai_total_pekerjaan_lembur'] = $nilai_total_pekerjaan_lembur;
+                    $record->update($data);
+             
+                    return $record;
+                })
+            
+            ,
                 Tables\Actions\DeleteAction::make(),
             ])
             ->headerActions([
@@ -112,6 +163,13 @@ class DataPenilaianResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            KelolaPekerjaansRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
