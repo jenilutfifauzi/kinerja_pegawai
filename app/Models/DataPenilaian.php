@@ -19,7 +19,7 @@ class DataPenilaian extends Model
         return $this->belongsTo(Pegawai::class);
     }
 
-    public function kelola_pekerjaan()
+    public function kelola_pekerjaans()
     {
         return $this->hasMany(Pekerjaan::class, 'pegawai_id', 'pegawai_id');
     }
