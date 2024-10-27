@@ -24,7 +24,7 @@ class DataPenilaianResource extends Resource
 {
     protected static ?string $model = DataPenilaian::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
     protected static ?int $navigationSort = 6;
 
@@ -126,10 +126,5 @@ class DataPenilaianResource extends Resource
         return parent::getEloquentQuery()->with('pegawai');
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            KelolaPekerjaanRelationManager::class,
-        ];
-    }
+   
 }
