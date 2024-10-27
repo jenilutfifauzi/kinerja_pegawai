@@ -9,6 +9,7 @@ class DataPenilaian extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    protected $with = ['kelola_pekerjaans'];
 
     protected $casts = [
         'periode' => 'date'

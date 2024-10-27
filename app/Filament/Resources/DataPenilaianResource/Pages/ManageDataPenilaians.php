@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\DataPenilaianResource\Pages;
 
 use App\Filament\Resources\DataPenilaianResource;
+use App\Filament\Resources\DataPenilaianResource\RelationManagers\KelolaPekerjaansRelationManager;
+use App\Filament\Widgets\KelolaPekerjaanWidget;
 use App\Imports\ImportDataPenilaians;
 use Filament\Actions;
 use Filament\Resources\Pages\ManageRecords;
@@ -34,5 +36,19 @@ class ManageDataPenilaians extends ManageRecords
         if ($this->file != '') {
             Excel::import(new ImportDataPenilaians, $this->file);
         }
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            KelolaPekerjaansRelationManager::class,
+        ];
+    }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            KelolaPekerjaanWidget::make(),
+        ];
     }
 }
