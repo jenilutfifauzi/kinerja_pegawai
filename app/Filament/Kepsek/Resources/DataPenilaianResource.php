@@ -37,6 +37,7 @@ class DataPenilaianResource extends Resource
                 ->label('Pegawai ID')
                 ->options(
                     Pegawai::pluck('name', 'id')
+                    
                 )
                 ->required(),
             TextInput::make('jumlah_hadir')

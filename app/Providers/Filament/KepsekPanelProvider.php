@@ -51,6 +51,7 @@ class KepsekPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                
             ]);
     }
 }

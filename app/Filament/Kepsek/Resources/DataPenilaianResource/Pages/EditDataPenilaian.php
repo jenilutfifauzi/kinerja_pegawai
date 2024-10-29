@@ -22,6 +22,7 @@ class EditDataPenilaian extends EditRecord
     {
         return [
             KelolaPekerjaansRelationManager::class,
+            
         ];
     }
 }
