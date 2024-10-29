@@ -70,6 +70,14 @@ class User extends Authenticatable implements FilamentUser
             }
             return false;
         }
+
+         // kepsek
+        if ($panel->getId() === 'kepsek') {
+            if ($this->level === 'kepsek') {
+                return true;
+            }
+            return false;
+        }
     }
 
     public function pegawai()
