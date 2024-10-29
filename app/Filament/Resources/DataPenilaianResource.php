@@ -114,6 +114,34 @@ class DataPenilaianResource extends Resource
                     })
                     ->searchable()
                     ->sortable(),
+                    TextColumn::make('nilai_total')
+                    ->label('Rata-rata Nilai')
+                    ->formatStateUsing(function (DataPenilaian $record) {
+                        $nilai_total_pekerjaan_harian = $record->nilai_bobot_pekerjaan_harian * 10 ?? 0;
+                        $nilai_total_pekerjaan_lembur = $record->nilai_bobot_pekerjaan_lembur * 10 ?? 0;
+                        $nilai_total_hadir = $record->nilai_total_hadir ?? 0;
+                        $nilai_total_izin = $record->nilai_total_izin ?? 0;
+                        $nilai_total_sakit = $record->nilai_total_sakit ?? 0;
+    
+                        $rata_rata_nilai = ($nilai_total_pekerjaan_harian + $nilai_total_pekerjaan_lembur + $nilai_total_hadir + $nilai_total_izin + $nilai_total_sakit) / 50;
+    
+                        if ($rata_rata_nilai >= 3.5) {
+                            $variableName = 'A';
+                        } elseif ($rata_rata_nilai >= 3.0) {
+                            $variableName = 'B';
+                        } elseif ($rata_rata_nilai >= 2.5) {
+                            $variableName = 'C';
+                        } elseif ($rata_rata_nilai >= 2.0) {
+                            $variableName = 'D';
+                        } else {
+                            $variableName = 'E';
+                        }
+    
+                        return $rata_rata_nilai . ' (' . $variableName . ')';
+                    })
+                    ->searchable()
+                    ->sortable(),
+    
 
                 TextColumn::make('periode')
                     ->searchable()
