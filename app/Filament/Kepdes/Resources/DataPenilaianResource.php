@@ -1,25 +1,23 @@
 <?php
 
-namespace App\Filament\Kepsek\Resources;
+namespace App\Filament\Kepdes\Resources;
 
-use App\Filament\Kepsek\Resources\DataPenilaianResource\Pages;
-use App\Filament\Kepsek\Resources\DataPenilaianResource\RelationManagers;
+use App\Filament\Kepdes\Resources\DataPenilaianResource\Pages;
+use App\Filament\Kepdes\Resources\DataPenilaianResource\RelationManagers;
 use App\Models\DataPenilaian;
+use App\Models\Pegawai;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
-use App\Models\Pegawai;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
-
-
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 
 class DataPenilaianResource extends Resource
 {
@@ -37,7 +35,6 @@ class DataPenilaianResource extends Resource
                 ->label('Pegawai ID')
                 ->options(
                     Pegawai::pluck('name', 'id')
-                    
                 )
                 ->required(),
             TextInput::make('jumlah_hadir')
@@ -112,6 +109,33 @@ class DataPenilaianResource extends Resource
                 })
                 ->searchable()
                 ->sortable(),
+            TextColumn::make('nilai_total')
+                ->label('Rata-rata Nilai')
+                ->formatStateUsing(function (DataPenilaian $record) {
+                    $nilai_total_pekerjaan_harian = $record->nilai_bobot_pekerjaan_harian * 10 ?? 0;
+                    $nilai_total_pekerjaan_lembur = $record->nilai_bobot_pekerjaan_lembur * 10 ?? 0;
+                    $nilai_total_hadir = $record->nilai_total_hadir ?? 0;
+                    $nilai_total_izin = $record->nilai_total_izin ?? 0;
+                    $nilai_total_sakit = $record->nilai_total_sakit ?? 0;
+
+                    $rata_rata_nilai = ($nilai_total_pekerjaan_harian + $nilai_total_pekerjaan_lembur + $nilai_total_hadir + $nilai_total_izin + $nilai_total_sakit) / 50;
+
+                    if ($rata_rata_nilai >= 3.5) {
+                        $variableName = 'A';
+                    } elseif ($rata_rata_nilai >= 3.0) {
+                        $variableName = 'B';
+                    } elseif ($rata_rata_nilai >= 2.5) {
+                        $variableName = 'C';
+                    } elseif ($rata_rata_nilai >= 2.0) {
+                        $variableName = 'D';
+                    } else {
+                        $variableName = 'E';
+                    }
+
+                    return $rata_rata_nilai . ' (' . $variableName . ')';
+                })
+                ->searchable()
+                ->sortable(),
 
             TextColumn::make('periode')
                 ->searchable()
@@ -154,7 +178,7 @@ class DataPenilaianResource extends Resource
             Tables\Actions\DeleteAction::make(),
         ])
         ->headerActions([
-            // Tables\Actions\CreateAction::make(),
+            Tables\Actions\CreateAction::make(),
         ])
         ->bulkActions([
             Tables\Actions\BulkActionGroup::make([
@@ -177,5 +201,10 @@ class DataPenilaianResource extends Resource
             'create' => Pages\CreateDataPenilaian::route('/create'),
             'edit' => Pages\EditDataPenilaian::route('/{record}/edit'),
         ];
+    }
+   
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('pegawai');
     }
 }

@@ -18,25 +18,25 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-class KepsekPanelProvider extends PanelProvider
+class KepdesPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
         return $panel
-            ->id('kepsek')
-            ->path('kepsek')
+            ->id('kepdes')
+            ->path('kepdes')
+            ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->discoverResources(in: app_path('Filament/Kepsek/Resources'), for: 'App\\Filament\\Kepsek\\Resources')
-            ->discoverPages(in: app_path('Filament/Kepsek/Pages'), for: 'App\\Filament\\Kepsek\\Pages')
+            ->discoverResources(in: app_path('Filament/Kepdes/Resources'), for: 'App\\Filament\\Kepdes\\Resources')
+            ->discoverPages(in: app_path('Filament/Kepdes/Pages'), for: 'App\\Filament\\Kepdes\\Pages')
             ->pages([
                 Pages\Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Kepsek/Widgets'), for: 'App\\Filament\\Kepsek\\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Kepdes/Widgets'), for: 'App\\Filament\\Kepdes\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
